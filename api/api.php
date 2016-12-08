@@ -4,15 +4,30 @@ include "connection.php";
 ini_set('display_errors',1);
 error_reporting(E_ALL);
 
-$tb = $_GET['tb'];
+if (isset($_GET['tb'])) {
+  $tb = $_GET['tb'];
+  switch ($tb) {
+    case 'players': $tbl = 'players'; break;
+    case 'games':   $tbl = 'games';   break;
+    default: echo "STOP BREAKING THINGS"; break;
+  };
 
-switch ($tb) {
-  case 'players': $tbl = 'players'; break;
-  case 'games':   $tbl = 'games';   break;
-  default: echo "STOP BREAKING THINGS"; break;
+};
+if (isset($_GET['cmd'])){
+  $cmd = $_GET['cmd'];
+  switch ($cmd) {
+    case 'getPlayers': $query= "SELECT * FROM players"; break;
+    case 'getGames': $query= "SELECT * FROM games"; break;
+    default: echo "STOP BREAKING THINGS"; break;
+  };
+
+};
+if (isset($_GET['id'])){
+  $id = $_GET['id'];
+  $idArray = '(' . join(',', $id) .')';
+  $query .= ' WHERE id in ' .$idArray;
 };
 
-$query = "SELECT * FROM ".$tbl;
 $result = mysqli_query($conn, $query);
 
 if(!$result) {
@@ -29,7 +44,11 @@ while($row = mysqli_fetch_assoc($result)) {
 $jsonEnc = json_encode($jsonData);
 
 echo $jsonEnc;
-print_r(json_decode($jsonEnc, true));
+// print_r(json_decode($jsonEnc, true));
 mysqli_close($conn);
+
+// };
+
+
 
  ?>
